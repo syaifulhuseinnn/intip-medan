@@ -1,6 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import useMyLocation from "@/hooks/useMyLocation";
+import L from "leaflet";
 
 const MapContainer = dynamic(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
@@ -19,19 +21,25 @@ const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), {
 });
 
 export default function Home() {
+  const { loaded, coordinates } = useMyLocation();
+  console.log(loaded, coordinates);
+  const myIcon = L.icon({
+    iconUrl: "/my-location.svg",
+    iconSize: [32, 32],
+  });
   return (
     <main className="h-screen w-full mx-auto">
       <MapContainer
-        center={[51.505, -0.09]}
-        zoom={13}
+        center={coordinates}
+        zoom={15}
         scrollWheelZoom={false}
         className="h-screen w-full"
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png"
         />
-        <Marker position={[51.505, -0.09]}>
+        <Marker position={coordinates} icon={myIcon}>
           <Popup>
             A pretty CSS3 popup. <br /> Easily customizable.
           </Popup>
